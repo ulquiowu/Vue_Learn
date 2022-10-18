@@ -85,7 +85,7 @@ Vue的搭建环境有两种，一种为<script>引入，另一种为vue-cli脚�
         Vue.config.productionTip = false//阻止Vue在启动时生产生产提示
     
         //创建Vue实例
-        const x = new Vue({
+        const v = new Vue({
             el : '#root',//el用于指定当前Vue实例为哪个容器服务,值通常为css选择器字符串（一般用id,也可用class）,或者用表达式document.getElementById('root')也一样
             data: {//data用于存储数据，数据供el中的容器所使用
                 name: '吴思源',
@@ -97,7 +97,139 @@ Vue的搭建环境有两种，一种为<script>引入，另一种为vue-cli脚�
 </html>
 ```
 
-## 3、模板语法
+还要一种搭建方法，先创建一个Vue实例，然后用`$mount`方法挂载，这一种相对比较灵活，可以在js代码的任何一个位置进行Vue的渲染
+
+```vue
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <!-- 引入Vue -->
+    <script type="text/javascript" src="../js/vue.js"></script>
+    <link rel="icon" href="../电脑.ico">
+</head>
+<body>
+    <div id = "root">
+        <h1>Hello {{name}}</h1>
+        <h2>年龄： {{age}}</h2>
+    </div>
+
+    <script type="text/javascript">
+        Vue.config.productionTip = false//阻止Vue在启动时生产生产提示
+    
+        //创建Vue实例
+        const v = new Vue({
+            //el: '#root'
+            data: {//data用于存储数据，数据供el中的容器所使用
+                name: '吴思源',
+                age: '18'
+            }
+        })
+        v.$mount('#root')
+    </script>
+</body>
+</html>
+```
+
+## 3、data数据
+
+data是Vue实例的一个属性，用于存储与页面标签体互动的数据，data中的数据可以在标签体中解析或者运用
+
+```vue
+ <div id = "root">
+        <h1>Hello {{name}}</h1>
+        <h2>年龄： {{age}}</h2>
+    </div>
+
+    <script type="text/javascript">
+        Vue.config.productionTip = false//阻止Vue在启动时生产生产提示
+    
+        //创建Vue实例
+        const v = new Vue({
+            //el: '#root'
+            data: {//data用于存储数据，数据供el中的容器所使用
+                name: '吴思源',
+                age: '18'
+            }
+        })
+        v.$mount('#root')
+    </script>
+```
+
+写法一：对象式
+
+data作为一个对象，data中的属性也是对象，一直循环下去
+
+```vue
+ <script type="text/javascript">
+        Vue.config.productionTip = false//阻止Vue在启动时生产生产提示
+    
+        //创建Vue实例
+        const v = new Vue({
+            //el: '#root'
+            data: {//data用于存储数据，数据供el中的容器所使用
+                name: '吴思源',
+                age: 18,
+                school: {
+                    schoolName: '无锡中学',
+                    subjects: [
+                        {
+                            name: '语文',
+                            teacher: '张三'
+                        },
+                        {
+                            name: '数学',
+                            teacher: '李四'
+                        }
+                    ]
+                }
+            }
+        })
+        v.$mount('#root')
+    </script>
+```
+
+写法二：函数式
+
+data作为一个函数，里面返回一个对象(推荐用这种，因为组件中只能用函数式)
+
+```vue
+ <script type="text/javascript">
+        Vue.config.productionTip = false//阻止Vue在启动时生产生产提示
+    
+        //创建Vue实例
+        const v = new Vue({
+            //el: '#root'
+            data() {//data用于存储数据，数据供el中的容器所使用,全写为data:function() {return{}}，简写为data() {return{}}
+                return {
+                	name: '吴思源',
+                	age: 18,
+                	school: {
+                    	schoolName: '无锡中学',
+                    	subjects: [
+                        	{
+                            	name: '语文',
+                            	teacher: '张三'
+                        	},
+                        	{
+                            	name: '数学',
+                            	teacher: '李四'
+                        	}
+                    	]
+                	}
+            	}
+            }
+        })
+        v.$mount('#root')
+    </script>
+```
+
+
+
+## 4、模板语法
 
  在root容器里的代码必须符合HTML规范，而且混入了一些特殊的Vue自己的语法
 
@@ -107,23 +239,18 @@ root容器里的代码被称为[Vue模板]
 
  可以将Vue实例的data属性内的数据运用到Vue模板中，data中的数据一旦改变，对应虚拟DOM里data的数据也随之改变，之后更新DOM，数据实施的更新在页面上
 
-可以为js表达式或者js代码(语句)
+功能：用于解析标签体内容
+
+写法：`{{xxx}}`，xxx是js表达式，且可以直接读取到data中的所有属性
 
 1、表达式: 一个表达式会生成一个值，可以放在任何一个需要值的地方
 
-- a
-- a+b
-- function()
-- x === y ? a : b
+- `a`
+- `a+b`
+- `function()`
+- `x === y ? a : b`
 
-2、js代码
-
-- if(){}
-- for(){}
-
-如果需要直接显示在容器内的(在超文本标记外),需要用两个{}包裹
-
-```html
+```vue
 <div id = "root">
         <h1>Hello {{name}}</h1>
         <h2>年龄： {{age}}</h2>
@@ -145,3 +272,72 @@ root容器里的代码被称为[Vue模板]
 ```
 
 ### 指令语法
+
+可以将Vue实例中data的属性值传给标签的属性
+
+功能：用于解析标签(包括标签属性、标签体内容、绑定事件等)
+
+写法：在标签属性的前面加上[v-bind:]，简写为[:]，例如 `v-bind:href = "xxx"`，xxx同样要写js表达式，且可以直接读取到data中的所有属性
+
+此处v-bind只是举个例子，指令语法中有很多指令
+
+```vue
+<div id = "root">
+        <h1>指令语法</h1>
+        <a v-bind:href="url">点击前往github</a>
+        <a :href="url">点击前往github简写</a>
+    </div>
+
+    <script type="text/javascript">
+        Vue.config.productionTip = false//阻止Vue在启动时生产生产提示
+    
+        //创建Vue实例
+        new Vue({
+            el : '#root',//el用于指定当前Vue实例为哪个容器服务,值通常为css选择器字符串（一般用id,也可用class）,或者用表达式document.getElementById('root')也一样
+            data: {
+                url: 'https://github.com/ulquiowu'
+            }
+        })
+    </script>
+```
+
+## 5、数据绑定
+
+### 单项绑定
+
+将Vue实例的dtata中的属性或js表达式绑定到Vue模板中，当data数据改变时，Vue模板中对应的数据随之改变,从而使页面上的数据也跟着改变
+
+写法：`v-bind:value="name"`，【v-bind】可简写为【:】，如`:value='name'`
+
+### 双向绑定
+
+将Vue实例的data中的属性或js表达式绑定到Vue模板中，当data数据改变时，Vue模板中对应的数据随之改变,从而使页面上的数据也跟着改变，当页面上数据改变时，Vue模板中对应的数据随之改变，Vue实例的data中的属性的数据也跟着改变
+
+写法：`v-model:value='name'`，可简写为v-model，因为v-model默认收集的就是value值，如`v-model='name'`
+
+注意双向绑定只能应用在表单类元素(输入类元素input，select等)上
+
+```vue
+<div id = "root">
+        单向数据绑定：<input type="text" v-bind:value="name">
+        <br/>
+        双向数据绑定：<input type="text" v-model:value="name">
+        <br/>
+        简写单向数据绑定：<input type="text" :value="name">
+        <br/>
+        简写双向数据绑定：<input type="text" v-model="name">
+    </div>
+
+    <script type="text/javascript">
+        Vue.config.productionTip = false//阻止Vue在启动时生产生产提示
+    
+        //创建Vue实例
+        new Vue({
+            el : '#root',//el用于指定当前Vue实例为哪个容器服务,值通常为css选择器字符串（一般用id,也可用class）,或者用表达式document.getElementById('root')也一样
+            data: {
+                name: '吴思源'
+            }
+        })
+    </script>
+```
+
